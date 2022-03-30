@@ -16,6 +16,8 @@ public class Client {
 
 	ObjectOutputStream os;
 	ObjectInputStream is;
+	
+	public String messages = "";
 
 	public Client(String ip, int port) {
 		this.ip = ip;
@@ -40,7 +42,7 @@ public class Client {
 		
 		while (connection.isConnected()) {
 			try {
-				JOptionPane.showMessageDialog(null, is.readObject());
+				messages += is.readObject().toString();
 				System.out.println(is.readObject());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -49,10 +51,10 @@ public class Client {
 		}
 	}
 	
-	public void sendClick() {
+	public void sendMessage(String s) {
 		try {
 			if (os != null) {
-				os.writeObject("CLICK SENT FROM CLIENT");
+				os.writeObject(s);
 				os.flush();
 			}
 		} catch (IOException e) {

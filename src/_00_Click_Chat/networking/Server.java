@@ -19,6 +19,8 @@ public class Server {
 
 	ObjectOutputStream os;
 	ObjectInputStream is;
+	
+	public String messages = "";
 
 	public Server(int port) {
 		this.port = port;
@@ -37,7 +39,7 @@ public class Server {
 
 			while (connection.isConnected()) {
 				try {
-					JOptionPane.showMessageDialog(null, is.readObject());
+					messages += is.readObject().toString();
 					System.out.println(is.readObject());
 				}catch(EOFException e) {
 					JOptionPane.showMessageDialog(null, "Connection Lost");
@@ -62,10 +64,10 @@ public class Server {
 		return port;
 	}
 
-	public void sendClick() {
+	public void sendMessage(String s) {
 		try {
 			if (os != null) {
-				os.writeObject("CLICK SENT FROM SERVER");
+				os.writeObject(s);
 				os.flush();
 			}
 		} catch (IOException e) {
