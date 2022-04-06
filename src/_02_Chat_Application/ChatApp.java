@@ -1,13 +1,13 @@
 package _02_Chat_Application;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.io.IOException;
-import java.net.InetAddress;
 
-import javax.swing.JButton;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
 import _00_Click_Chat.networking.Client;
@@ -23,9 +23,7 @@ public class ChatApp extends JFrame{
 	
 	JPanel p = new JPanel();
 	JTextField f = new JTextField(10);
-	JLabel l = new JLabel("");
-	JButton sendButton = new JButton("Send");
-	JButton updateButton = new JButton("Update");
+	JTextArea l = new JTextArea("");
 	
 	Client c;
 	Server s;
@@ -35,53 +33,48 @@ public class ChatApp extends JFrame{
 	}
 	
 	public ChatApp() throws IOException {
+		l.setEnabled(false);
+		l.setDisabledTextColor(Color.black);
+		l.setFont(new Font("name?", 1, 20));
 		String response;
 		do {
 			response = JOptionPane.showInputDialog("Would you like to host a server connection or be a client? (S / C): ");
 		}while(!(response.equalsIgnoreCase("C") || response.equalsIgnoreCase("S")));
 		if(response.equalsIgnoreCase("S")) {
 			setTitle("Server");
-			s = new Server(8080);
+			s = new Server(8080, this);
 			System.out.println("Server started\nIP: " + s.getIPAddress() + "\nPort: " + s.getPort());
 			p.add(f);
-			p.add(sendButton);
-			p.add(updateButton);
 			p.add(l);
-			sendButton.addActionListener((e)->{
-				s.messages += f.getText();
-				s.sendMessage(f.getText());
-				f.setText("");
-			});
-			updateButton.addActionListener((e)->{
-				l.setText(s.messages);
-				System.out.println("Server update: " + s.messages);
-			});
+			f.addKeyListener(s);
 			add(p);
 			setSize(500, 500);
 			setVisible(true);
 			s.start();
+			
 		}else {
 			setTitle("Client");
-			c = new Client(JOptionPane.showInputDialog("Enter IP address: "), Integer.parseInt(JOptionPane.showInputDialog("Enter a port: ")));
+			c = new Client(JOptionPane.showInputDialog("Enter IP address: "), Integer.parseInt(JOptionPane.showInputDialog("Enter a port: ")), this);
+
 			p.add(f);
-			p.add(sendButton);
-			p.add(updateButton);
 			p.add(l);
-			sendButton.addActionListener((e)->{
-				c.messages += f.getText();
-				c.sendMessage(f.getText());
-				f.setText("");
-			});
-			updateButton.addActionListener((e)->{
-				l.setText(c.messages);
-				System.out.println("Client update: " + c.messages);
-			});
+			f.addKeyListener(c);
 			add(p);
 			setSize(500, 500);
 			setVisible(true);
 			c.start();
 		}
 	}
+	
+	public void setText(String s){
+		System.out.println(s);
+		
+		l.setText(s);
+		f.setText("");
+	}
+
+	
+	
 	
 	
 }
